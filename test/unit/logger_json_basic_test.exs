@@ -64,4 +64,85 @@ defmodule LoggerJSONBasicTest do
       assert %{} == log["metadata"]
     end
   end
+
+  describe "when doesn't set tz " do
+    test "timestamp can be formatted RFC3339" do
+      Logger.configure_backend(LoggerJSON, metadata: [])
+      log =
+        fn -> Logger.debug("hello") end
+        |> capture_log()
+        |> Jason.decode!()
+      assert Regex.match?(~r/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/, log["time"])
+    end
+  end
+
+  describe "when set tz=UTC" do
+    setup do
+      now_tz = System.get_env("TZ")
+      System.put_env("TZ", "Etc/UTC")
+      on_exit(fn ->
+        if now_tz == nil do
+          System.delete_env("TZ")
+        else
+          System.put_env("TZ", now_tz)
+        end
+      end)
+    end
+    test "timestamp can be formatted RFC3339" do
+      Logger.configure_backend(LoggerJSON, metadata: [])
+      log =
+        fn -> Logger.debug("hello") end
+        |> capture_log()
+        |> Jason.decode!()
+      assert Regex.match?(~r/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/, log["time"])
+    end
+  end
+
+  describe "when set tz=Asia/Tokyo" do
+    setup [:set_tz_asia]
+    test "timestamp can be formatted RFC3339" do
+      Logger.configure_backend(LoggerJSON, metadata: [])
+      log =
+        fn -> Logger.debug("hello") end
+        |> capture_log()
+        |> Jason.decode!()
+      assert Regex.match?(~r/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}\+09\:00/, log["time"])
+    end
+  end
+
+  describe "when set tz=Asia/Tokyo and utc_log=true" do
+    setup [:set_tz_asia, :set_utc_log]
+    test "timestamp can be formatted Zulu Format" do
+      Logger.configure_backend(LoggerJSON, metadata: [])
+      log =
+        fn -> Logger.debug("hello") end
+        |> capture_log()
+        |> Jason.decode!()
+      assert Regex.match?(~r/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/, log["time"])
+    end
+  end
+
+  defp set_tz_asia(_) do
+    now_tz = System.get_env("TZ")
+    System.put_env("TZ", "Asia/Tokyo")
+    on_exit(fn ->
+      if now_tz == nil do
+        System.delete_env("TZ")
+      else
+        System.put_env("TZ", now_tz)
+      end
+    end)
+  end
+
+  defp set_utc_log(_) do
+    now_utc_log = Application.fetch_env!(:logger, :utc_log)
+    Application.put_env(:logger, :utc_log, true)
+    on_exit(fn ->
+      if now_utc_log == nil do
+        Application.delete_env(:logger, :utc_log)
+      else
+        Application.put_env(:logger, :utc_log, now_utc_log)
+      end
+    end)
+  end
 end

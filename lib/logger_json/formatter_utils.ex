@@ -24,8 +24,30 @@ defmodule LoggerJSON.FormatterUtils do
   RFC3339 UTC "Zulu" format
   """
   def format_timestamp({date, time}) do
-    [format_date(date), ?T, format_time(time), ?Z]
-    |> IO.iodata_to_binary()
+    utc_log = Application.fetch_env!(:logger, :utc_log)
+    {utc_date, utc_time} = convert_local_time_to_universal_time({date, time}, utc_log)
+    tz = System.get_env("TZ")
+    if tz == nil || utc_log do
+      [format_date(utc_date), ?T, format_time(utc_time), ?Z]
+      |> IO.iodata_to_binary()
+    else
+      {:ok, utc_dt, _} = [format_date(utc_date), ?T, format_time(utc_time), ?Z]
+      |> IO.iodata_to_binary()
+      |> DateTime.from_iso8601()
+      {:ok, shift_datetime} = DateTime.shift_zone(utc_dt, tz, Tzdata.TimeZoneDatabase)
+      DateTime.to_iso8601(shift_datetime)
+    end
+  end
+
+  defp convert_local_time_to_universal_time({date, time}, utc_log) do
+    {h, m, s, micro} = time
+    {utc_date, {utc_hour, utc_min, utc_sec}} =
+      if utc_log do
+        {date, {h, m, s}}
+      else
+        :calendar.local_time_to_universal_time({date, {h, m, s}})
+      end
+    {utc_date, {utc_hour, utc_min, utc_sec, micro}}
   end
 
   @doc """
