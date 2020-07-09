@@ -65,6 +65,17 @@ defmodule LoggerJSONBasicTest do
     end
   end
 
+  test "logs chardata messages" do
+    Logger.configure_backend(LoggerJSON, metadata: :all)
+
+    log =
+      fn -> Logger.debug([?α, ?β, ?ω]) end
+      |> capture_log()
+      |> Jason.decode!()
+
+    assert %{"message" => "αβω"} = log
+  end
+
   describe "when doesn't set tz " do
     test "timestamp can be formatted RFC3339" do
       Logger.configure_backend(LoggerJSON, metadata: [])
