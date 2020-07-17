@@ -31,6 +31,7 @@ defmodule LoggerJSON.Formatters.GoogleCloudLogger do
         format_metadata(md, md_keys),
         %{
           time: FormatterUtils.format_timestamp(ts),
+          time_test_logger: FormatterUtils.format_timestamp(ts),
           severity: unquote(gcp_level),
           message: IO.chardata_to_string(msg)
         }
@@ -43,6 +44,7 @@ defmodule LoggerJSON.Formatters.GoogleCloudLogger do
       format_metadata(md, md_keys),
       %{
         time: FormatterUtils.format_timestamp(ts),
+        time_test_logger: FormatterUtils.format_timestamp(ts),
         severity: "DEFAULT",
         message: IO.chardata_to_string(msg)
       }
