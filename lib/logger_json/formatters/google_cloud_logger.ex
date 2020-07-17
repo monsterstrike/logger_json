@@ -30,6 +30,7 @@ defmodule LoggerJSON.Formatters.GoogleCloudLogger do
       Map.merge(
         %{
           time: FormatterUtils.format_timestamp(ts),
+          created_at: FormatterUtils.format_timestamp(ts),
           severity: unquote(gcp_level),
           message: IO.chardata_to_string(msg)
         },
@@ -42,6 +43,7 @@ defmodule LoggerJSON.Formatters.GoogleCloudLogger do
     Map.merge(
       %{
         time: FormatterUtils.format_timestamp(ts),
+        created_at: FormatterUtils.format_timestamp(ts),
         severity: "DEFAULT",
         message: IO.chardata_to_string(msg)
       },
