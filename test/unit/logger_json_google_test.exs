@@ -274,6 +274,14 @@ defmodule LoggerJSONGoogleTest do
     assert log["error"]["initial_call"] == "Elixir.Foo.bar/3"
   end
 
+  test "created_at value matchs time value" do
+    log =
+      fn -> Logger.debug("hello") end
+      |> capture_log()
+      |> Jason.decode!()
+    assert log["created_at"] == log["time"]
+  end
+
   # Sets metadata to :all for test purposes
   def on_init_cb(conf) do
     {:ok, Keyword.put(conf, :metadata, :all)}
