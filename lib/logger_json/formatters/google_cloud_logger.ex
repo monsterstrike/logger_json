@@ -28,28 +28,28 @@ defmodule LoggerJSON.Formatters.GoogleCloudLogger do
   for {level, gcp_level} <- @severity_levels do
     def format_event(unquote(level), msg, ts, md, md_keys) do
       Map.merge(
+        format_metadata(md, md_keys),
         %{
           time: FormatterUtils.format_timestamp(ts),
           created_at: FormatterUtils.format_timestamp(ts),
           severity: unquote(gcp_level),
           message: IO.chardata_to_string(msg),
           uuid: UUID.uuid4()
-        },
-        format_metadata(md, md_keys)
+        }
       )
     end
   end
 
   def format_event(_level, msg, ts, md, md_keys) do
     Map.merge(
+      format_metadata(md, md_keys),
       %{
         time: FormatterUtils.format_timestamp(ts),
         created_at: FormatterUtils.format_timestamp(ts),
         severity: "DEFAULT",
         message: IO.chardata_to_string(msg),
         uuid: UUID.uuid4()
-      },
-      format_metadata(md, md_keys)
+      }
     )
   end
 
