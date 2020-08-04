@@ -293,6 +293,15 @@ defmodule LoggerJSONGoogleTest do
     assert log["created_at"] == log["time"]
   end
 
+  test "exists key 'uuid'" do
+    log =
+      fn -> Logger.debug("hello") end
+      |> capture_log()
+      |> Jason.decode!()
+    IO.puts inspect(log)
+    assert not is_nil(log["uuid"])
+  end
+
   # Sets metadata to :all for test purposes
   def on_init_cb(conf) do
     {:ok, Keyword.put(conf, :metadata, :all)}

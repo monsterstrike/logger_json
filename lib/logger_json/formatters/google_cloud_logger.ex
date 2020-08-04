@@ -32,7 +32,8 @@ defmodule LoggerJSON.Formatters.GoogleCloudLogger do
           time: FormatterUtils.format_timestamp(ts),
           created_at: FormatterUtils.format_timestamp(ts),
           severity: unquote(gcp_level),
-          message: IO.chardata_to_string(msg)
+          message: IO.chardata_to_string(msg),
+          uuid: UUID.uuid4()
         },
         format_metadata(md, md_keys)
       )
@@ -45,7 +46,8 @@ defmodule LoggerJSON.Formatters.GoogleCloudLogger do
         time: FormatterUtils.format_timestamp(ts),
         created_at: FormatterUtils.format_timestamp(ts),
         severity: "DEFAULT",
-        message: IO.chardata_to_string(msg)
+        message: IO.chardata_to_string(msg),
+        uuid: UUID.uuid4()
       },
       format_metadata(md, md_keys)
     )

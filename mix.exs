@@ -56,7 +56,8 @@ defmodule LoggerJSON.Mixfile do
       {:ex_doc, ">= 0.15.0", only: [:dev, :test]},
       {:excoveralls, ">= 0.5.0", only: [:dev, :test]},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
-      {:tzdata, "~> 1.0.3"}
+      {:tzdata, "~> 1.0.3"},
+      {:elixir_uuid, "~> 1.2"}
     ]
   end
 
