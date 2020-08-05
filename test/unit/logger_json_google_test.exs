@@ -10,7 +10,7 @@ defmodule LoggerJSONGoogleTest do
         LoggerJSON,
         device: :user,
         level: nil,
-        metadata: [],
+        metadata: [:all],
         json_encoder: Jason,
         on_init: :disabled,
         formatter: GoogleCloudLogger
@@ -59,6 +59,8 @@ defmodule LoggerJSONGoogleTest do
       fn -> Logger.debug("hello") end
       |> capture_log()
       |> Jason.decode!()
+
+    IO.puts inspect log
 
     assert %{"message" => "hello"} = log
   end
