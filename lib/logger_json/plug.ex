@@ -37,7 +37,9 @@ if Code.ensure_loaded?(Plug) do
 
     @impl true
     def call(conn, {level, metadata_formatter, client_version_header, ignore_paths}) do
-      if not is_ignore_path(conn, ignore_paths) do
+      if is_ignore_path(conn, ignore_paths) do
+        conn
+      else
         start = System.monotonic_time()
 
         Conn.register_before_send(conn, fn conn ->
@@ -46,8 +48,6 @@ if Code.ensure_loaded?(Plug) do
           Logger.log(level, "", metadata)
           conn
         end)
-      else
-        conn
       end
     end
 
