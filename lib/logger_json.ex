@@ -199,9 +199,12 @@ defmodule LoggerJSON do
     device = Keyword.get(config, :device, :user)
     max_buffer = Keyword.get(config, :max_buffer, 32)
 
+    ignore_metadata = &Enum.member?(Keyword.get(:ignore_metadata, [])
+
     metadata =
       config
       |> Keyword.get(:metadata, [])
+      |> Enum.reject(&Enum.member?(ignore_metadata, &1))
       |> configure_metadata()
 
     %{
