@@ -198,8 +198,7 @@ defmodule LoggerJSON do
     level = Keyword.get(config, :level)
     device = Keyword.get(config, :device, :user)
     max_buffer = Keyword.get(config, :max_buffer, 32)
-
-    ignore_metadata = Keyword.get(:ignore_metadata, [])
+    ignore_metadata = Keyword.get(config, :ignore_metadata, [])
 
     metadata =
       config
