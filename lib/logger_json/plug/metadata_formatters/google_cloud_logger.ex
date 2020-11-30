@@ -12,11 +12,11 @@ if Code.ensure_loaded?(Plug) do
     """
     import Jason.Helpers, only: [json_map: 1]
 
-    @nanoseconds_in_second System.convert_time_unit(1, :second, :nanosecond)
+    @microseconds_in_second System.convert_time_unit(1, :second, :microsecond)
 
     @doc false
     def build_metadata(conn, latency, client_version_header) do
-      latency_seconds = native_to_seconds(latency)
+      latency_seconds = micro_to_seconds(latency)
       request_method = conn.method
       request_url = request_url(conn)
       status = conn.status
@@ -42,12 +42,12 @@ if Code.ensure_loaded?(Plug) do
         ]
     end
 
-    defp native_to_seconds(nil) do
+    defp micro_to_seconds(nil) do
       nil
     end
 
-    defp native_to_seconds(native) do
-      seconds = System.convert_time_unit(native, :native, :nanosecond) / @nanoseconds_in_second
+    defp micro_to_seconds(micro) do
+      seconds = micro / @microseconds_in_second
       :erlang.float_to_binary(seconds, [{:decimals, 8}, :compact]) <> "s"
     end
 

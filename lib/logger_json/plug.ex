@@ -40,10 +40,10 @@ if Code.ensure_loaded?(Plug) do
       if is_ignore_path(conn, ignore_paths) do
         conn
       else
-        start = System.monotonic_time()
+        start = :os.timestamp()
 
         Conn.register_before_send(conn, fn conn ->
-          latency = System.monotonic_time() - start
+          latency = :timer.now_diff(:os.timestamp(), start)
           metadata = metadata_formatter.build_metadata(conn, latency, client_version_header)
           Logger.log(level, "", metadata)
           conn
